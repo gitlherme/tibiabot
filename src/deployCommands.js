@@ -4,7 +4,7 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 
 const commands = [
-	new SlashCommandBuilder().setName('verificar').setDescription('Fazer sua verificação dentro do servidor!'),
+	new SlashCommandBuilder().setName('verificar').setDescription('Fazer sua verificação dentro do servidor!').addStringOption(option => option.setName('name').setDescription('Digite o nome do personagem')),
 ]
 	.map(command => command.toJSON());
 
