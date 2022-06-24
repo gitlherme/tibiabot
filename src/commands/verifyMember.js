@@ -2,21 +2,35 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed, Guild } = require('discord.js');
 const getCharacterData = require('../utils/getCharacterInfo')
 
-
-async function giveAccess(client, interaction) {
+async function getGeneralInfos(client, interaction) {
 	const server = client.guilds.cache.get(interaction.guildId)
 	const member = await server.members.fetch(interaction.user.id)
-	const role = await server.roles.fetch('989562433666449479')
-	member.roles.add(role)
+	return {
+		server,
+		member
+	}
 }
 
-async function changeName(client, interaction, name, vocation) {
-	const server = client.guilds.cache.get(interaction.guildId)
-	const member = await server.members.fetch(interaction.user.id)
+
+async function giveRole(role) {
+	const { member } = getGeneralInfos()
+	const fetchRole = await server.roles.fetch(role)
+	member.roles.add(fetchRole)
+}
+
+async function changeName(name, vocation) {
+	const { member } = getGeneralInfos()
 	if (vocation.includes('Knight')) member.setNickname(`[EK] ${name}`)
 	if (vocation.includes('Paladin')) member.setNickname(`[RP] ${name}`)
 	if (vocation.includes('Druid')) member.setNickname(`[ED] ${name}`)
 	if (vocation.includes('Sorcerer')) member.setNickname(`[MS] ${name}`)
+}
+
+async function changeVocationRole(vocation) {
+	if (vocation.includes('Knight')) giveRole('989656753677414490')
+	if (vocation.includes('Paladin')) giveRole('989656715765104671')
+	if (vocation.includes('Druid'))giveRole('989656687222853682')
+	if (vocation.includes('Sorcerer')) giveRole('989656636761194556')
 }
 
 function generateResponse(type) {
@@ -45,7 +59,8 @@ module.exports = {
 		const characterToBeVerified = interaction.options.getString('name')
     const character = await getCharacterData(characterToBeVerified)
 		if (character.guild.name === 'Harty Punt') {
-			giveAccess(client, interaction)
+			getGeneralInfos(client, interaction)
+			changeVocationRole(character.vocation)
 			changeName(client, interaction, character.name, character.vocation)
 			await interaction.reply(await generateResponse('success'));
 		}
