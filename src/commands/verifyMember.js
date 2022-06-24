@@ -1,36 +1,25 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed, Guild } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const getCharacterData = require('../utils/getCharacterInfo')
+const getGeneralInfos = require('../utils/getGeneralInfo')
 
-async function getGeneralInfos(client, interaction) {
-	const server = client.guilds.cache.get(interaction.guildId)
-	const member = await server.members.fetch(interaction.user.id)
-	return {
-		server,
-		member
-	}
-}
-
-
-async function giveRole(role) {
-	const { member } = getGeneralInfos()
-	const fetchRole = await server.roles.fetch(role)
+async function giveRole(server, member, roleToBeGived) {
+	const fetchRole = await server.roles.cache.find(roleToBeGived)
 	member.roles.add(fetchRole)
 }
 
-async function changeName(name, vocation) {
-	const { member } = getGeneralInfos()
+async function changeName(member, name, vocation) {
 	if (vocation.includes('Knight')) member.setNickname(`[EK] ${name}`)
 	if (vocation.includes('Paladin')) member.setNickname(`[RP] ${name}`)
 	if (vocation.includes('Druid')) member.setNickname(`[ED] ${name}`)
 	if (vocation.includes('Sorcerer')) member.setNickname(`[MS] ${name}`)
 }
 
-async function changeVocationRole(vocation) {
-	if (vocation.includes('Knight')) giveRole('989656753677414490')
-	if (vocation.includes('Paladin')) giveRole('989656715765104671')
-	if (vocation.includes('Druid'))giveRole('989656687222853682')
-	if (vocation.includes('Sorcerer')) giveRole('989656636761194556')
+async function changeVocationRole(server, member, vocation) {
+	if (vocation.includes('Knight')) giveRole(server, member,'698609256886304788')
+	if (vocation.includes('Paladin')) giveRole(server, member,'698609350985646180')
+	if (vocation.includes('Druid'))giveRole(server, member,'698609308031778826')
+	if (vocation.includes('Sorcerer')) giveRole(server, member,'698609390189674589')
 }
 
 function generateResponse(type) {
@@ -56,12 +45,13 @@ module.exports = {
 			.setDescription('Nome do personagem pra registro')
 			.setRequired(true)),
 	async execute(interaction, client) {
+		const { server, member } = await getGeneralInfos(client, interaction)
 		const characterToBeVerified = interaction.options.getString('name')
     const character = await getCharacterData(characterToBeVerified)
 		if (character.guild.name === 'Harty Punt') {
-			getGeneralInfos(client, interaction)
-			changeVocationRole(character.vocation)
-			changeName(client, interaction, character.name, character.vocation)
+			giveRole(server, member, '699071273401319464')
+			changeVocationRole(server, member, character.vocation)
+			changeName(member, character.name, character.vocation)
 			await interaction.reply(await generateResponse('success'));
 		}
 		if (character.guild.name !== 'Harty Punt') await interaction.reply(await generateResponse('error'));
