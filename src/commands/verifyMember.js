@@ -4,7 +4,7 @@ const getCharacterData = require('../utils/getCharacterInfo')
 const getGeneralInfos = require('../utils/getGeneralInfo')
 
 async function giveRole(server, member, roleToBeGived) {
-	const fetchRole = await server.roles.cache.find(roleToBeGived)
+	const fetchRole = await server.roles.cache.get(roleToBeGived)
 	member.roles.add(fetchRole)
 }
 
